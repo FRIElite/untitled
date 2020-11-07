@@ -5,7 +5,7 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 app.get('/', (req, res) => {
-    res.send('Hello world');
+    res.send('Hello test');
 });
 
 app.listen(port, () => console.log(`Server listening on port ${port}!`));
