@@ -1,3 +1,4 @@
+import { ColorModeProvider, CSSReset, ThemeProvider } from '@chakra-ui/core';
 import React, { ReactElement } from 'react';
 import { ThemeProvider, CSSReset, ColorModeProvider, useColorMode } from '@chakra-ui/core';
 import customTheme from './components/theme/custom_theme';
@@ -15,7 +16,7 @@ function AppBase(): ReactElement {
         <Router>
             <Navbar />
             <Switch>
-                <Route exact path="/">
+                <Route exact path='/'>
                     <Home />
                 </Route>
                 <Route exact path="/list">
