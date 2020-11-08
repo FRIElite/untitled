@@ -3,7 +3,10 @@ import { MovieRef, User } from '../common/interfaces';
 
 // const k = 10;
 
-export function predict(user: User, users: User[]): MovieRef {
+export function predict(user: User, users: User[]): MovieRef | null {
+    if (!user.ratedMovies || user.ratedMovies.length == 0) {
+        return null;
+    }
     const userRatedMoviesIds = user.ratedMovies.filter((e) => e).map((e) => e._id!.toHexString());
     const userRecommendedMoviesIds = user.unratedMovies.filter((e) => e).map((e) => e._id!.toHexString());
     const userVec = user.ratedMovies.filter((e) => e).map((e) => e.userRating);
