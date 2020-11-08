@@ -13,16 +13,11 @@ import { Login } from './components/design/login/Login';
 import { Rate } from './components/design/rate/Rate';
 
 function AppBase(): ReactElement {
-    const [validAuth, setValidAuth] = React.useState<boolean>(true);
     const [cookies, setCookie, removeCookie] = useCookies(['reco']);
-    React.useEffect(() => {
-        if (cookies && !cookies?.auth) setValidAuth(false);
-        // else removeCookie("reco")
-    }, []);
 
     return (
         <Router>
-            {!validAuth ? <Redirect to="/login" /> : <Navbar />}
+            {!cookies?.auth ? <Redirect to="/login" /> : <Navbar />}
 
             <Switch>
                 <Route exact path="/">

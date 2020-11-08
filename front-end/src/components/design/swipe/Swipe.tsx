@@ -1,32 +1,32 @@
-import React, { ReactElement, Component } from 'react';
+import React, { ReactElement } from 'react';
 import {
-    AspectRatioBox,
     Flex,
     Heading,
-    IconButton,
     Image,
     useColorMode,
-    Text,
     Slider,
     SliderTrack,
     SliderFilledTrack,
     SliderThumb,
     Box,
-    Tag,
     Icon,
     Button,
     Skeleton,
 } from '@chakra-ui/core';
-import { useQuery, QueryCache, ReactQueryCacheProvider } from 'react-query';
-import { useTrail, animated } from 'react-spring';
 import { MovieGenre } from '../extra/MovieGenre';
 import { useCookies } from 'react-cookie';
 import { getGenreById } from '../../../utils/utils';
 export function Swipe(): ReactElement {
+    const [reload, setReload] = React.useState(true);
     const [cookies, setCookie, removeCookie] = useCookies(['reco']);
-    console.log(cookies?.auth?.username);
+    const [data, setData] = React.useState<any>();
+    const [rating, setRating] = React.useState(5);
+    const { colorMode } = useColorMode();
+    const is_light: boolean = colorMode == 'light';
 
-    let { isLoading, error, data }: any = useQuery<any, any>('swipe', () =>
+    const max_rating: number = 10;
+
+    React.useEffect(() => {
         fetch((process.env.REACT_APP_URL || 'localhost') + '/recommend/' + cookies?.auth?.username)
             .then((res) => res.json())
             .then((res) => {
@@ -34,29 +34,15 @@ export function Swipe(): ReactElement {
                     res.json()
                 );
             })
-    );
-    const [rating, setRating] = React.useState(5);
-    const { colorMode, toggleColorMode } = useColorMode();
-    const is_light: boolean = colorMode == 'light';
-    const colors = ['red', 'green', 'blue', 'orange', 'purple', 'yellow'];
-
-    const max_rating: number = 10;
-
-    // const movie_data: any = {
-    //     image_url:
-    //         'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg',
-    //     title: 'The Avengers',
-    //     release_date: '4th May 2012',
-    //     genres: ['Action', 'Adventure', 'Sci-Fi'],
-    // };
-
-    console.log(data);
+            .then((res) => setData(res))
+            .then(() => setRating(5));
+    }, [reload]);
 
     const movie_thumb = React.useMemo(
         () => (
             <Box position="absolute" top={5}>
                 <Flex direction="column" justify="flex-start" align="center" w="200px">
-                    {isLoading ? (
+                    {!data ? (
                         <Skeleton width="100%" height="300px" />
                     ) : (
                         <>
@@ -80,7 +66,10 @@ export function Swipe(): ReactElement {
                                 position="relative"
                             >
                                 {data.genre_ids?.map((genre: string, i: number) => (
-                                    <MovieGenre mr={i !== data.genre_ids.length - 1 ? '5px' : '0px'} children={getGenreById(genre)} />
+                                    <MovieGenre
+                                        mr={i !== data.genre_ids.length - 1 ? '5px' : '0px'}
+                                        children={getGenreById(genre)}
+                                    />
                                 ))}
                             </Flex>
                         </>
@@ -93,7 +82,6 @@ export function Swipe(): ReactElement {
 
     const vote = () => {
         if (!data) return;
-        console.log({ data });
 
         fetch((process.env.REACT_APP_URL || 'localhost') + '/vote/' + cookies?.auth?.username, {
             method: 'PUT',
@@ -109,7 +97,7 @@ export function Swipe(): ReactElement {
                 _id: data._id,
                 userRating: rating,
             }),
-        }).then(() => window.location.reload());
+        }).then(() => setReload(!reload));
     };
 
     return (
@@ -124,6 +112,7 @@ export function Swipe(): ReactElement {
                 max={max_rating}
                 min={0}
                 defaultValue={rating}
+                value={rating}
                 onChange={(value: number) => setRating(value)}
                 mt="35px"
             >
@@ -141,7 +130,7 @@ export function Swipe(): ReactElement {
                     variant="solid"
                     variantColor="blue"
                     children="Skip"
-                    onClick={() => window.location.reload()}
+                    onClick={() => setReload(!reload)}
                 />
             </Flex>
         </Flex>

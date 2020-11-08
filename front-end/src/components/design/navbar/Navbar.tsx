@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import {
     Flex,
-    Box,
     Drawer,
     useDisclosure,
     DrawerOverlay,
@@ -10,7 +9,6 @@ import {
     DrawerBody,
     IconButton,
     useColorMode,
-    Divider,
     Heading,
     DrawerCloseButton,
     List,
@@ -18,7 +16,7 @@ import {
     Avatar,
     Button,
 } from '@chakra-ui/core';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 export function Navbar(): ReactElement {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -27,10 +25,12 @@ export function Navbar(): ReactElement {
     const is_light: boolean = colorMode == 'light';
     const color_mode_icon: any = is_light ? 'sun' : 'moon';
     const color_mode_color: any = is_light ? 'yellow' : 'gray';
+    const history = useHistory();
 
     const Logout = () => {
         removeCookie('auth');
-        return window.location.reload(false);
+        history.push("/");
+        window.location.reload();
     };
 
     const NavbarDrawer = (): ReactElement => {
@@ -85,15 +85,6 @@ export function Navbar(): ReactElement {
                 <Heading as={Link} {...{ to: '/' }} size="2xl">
                     Reco
                 </Heading>
-                {/* <IconButton
-                    variant="ghost"
-                    variantColor="teal"
-                    aria-label="Call Sage"
-                    icon="drag-handle"
-                    size="lg"
-                    onClick={onOpen}
-                /> */}
-
                 <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" onClick={onOpen} />
             </Flex>
             <NavbarDrawer />

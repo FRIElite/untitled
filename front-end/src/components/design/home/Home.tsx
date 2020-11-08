@@ -1,5 +1,5 @@
-import { Box, Button, Flex, Heading, Image, SimpleGrid } from '@chakra-ui/core';
-import React, { ReactElement, useState } from 'react';
+import { Button, SimpleGrid } from '@chakra-ui/core';
+import React, { ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 
 export function Home(): ReactElement {

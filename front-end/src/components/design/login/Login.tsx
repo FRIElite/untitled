@@ -16,7 +16,7 @@ import { LoginBox } from './LoginComponents';
 import { LoginFormInputs } from './LoginTypes';
 import { useHistory } from 'react-router-dom';
 
-export function Login({ ...props }: any): ReactElement {
+export function Login(): ReactElement {
     const [cookies, setCookie, removeCookie] = useCookies(['reco']);
     const history = useHistory();
 

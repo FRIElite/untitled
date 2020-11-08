@@ -1,59 +1,20 @@
 import { Box, Flex, Text, SimpleGrid, Image, Button, Skeleton, Heading, Icon, useColorMode } from '@chakra-ui/core';
 import React, { ReactElement } from 'react';
 import { useCookies } from 'react-cookie';
-import { useQuery } from 'react-query';
 import { getGenreById } from '../../../utils/utils';
 import { MovieGenre } from '../extra/MovieGenre';
 
-const movies_data = [
-    {
-        image_url:
-            'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg',
-        title: 'The Avengers',
-        release_date: '4th May 2012',
-        genres: ['Action', 'Adventure', 'Sci-Fi'],
-    },
-    {
-        image_url:
-            'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg',
-        title: 'The Avengers',
-        release_date: '4th May 2012',
-        genres: ['Action', 'Adventure', 'Sci-Fi'],
-    },
-    {
-        image_url:
-            'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg',
-        title: 'The Avengers',
-        release_date: '4th May 2012',
-        genres: ['Action', 'Adventure', 'Sci-Fi'],
-    },
-    {
-        image_url:
-            'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg',
-        title: 'The Avengers',
-        release_date: '4th May 2012',
-        genres: ['Action', 'Adventure', 'Sci-Fi'],
-    },
-    {
-        image_url:
-            'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg',
-        title: 'The Avengers',
-        release_date: '4th May 2012',
-        genres: ['Action', 'Adventure', 'Sci-Fi'],
-    },
-];
-
 export function List(): ReactElement {
     const [cookies, setCookie, removeCookie] = useCookies(['reco']);
-    let { isLoading, error, data }: any = useQuery<any, any>('repoData', async () =>
-        fetch((process.env.REACT_APP_URL || 'localhost') + '/user/' + cookies?.auth?.username).then((res) => res.json())
-    );
-
+    const [data, setData] = React.useState<any>();
     const [showAmount, setShowAmount] = React.useState(5);
-    console.log(data);
+
+    React.useEffect(() => {
+        fetch((process.env.REACT_APP_URL || 'localhost') + '/user/' + cookies?.auth?.username).then((res) => res.json()).then((res) => setData(res))
+    }, []);
 
     const movie_list = React.useMemo(() => {
-        if (isLoading) return <Skeleton width="100%" height="100px" />;
+        if (!data) return <Skeleton width="100%" height="100px" />;
         const movies = [];
         for (let i = 0; i < data?.ratedMovies?.length || 0; i++) {
             if (i >= showAmount) break;
@@ -80,28 +41,15 @@ function MovieDetails({ movie_data, index }: any) {
     const [hover, setHover] = React.useState(false);
     const { colorMode, toggleColorMode } = useColorMode();
     const is_light: boolean = colorMode == 'light';
-    const [movie, setMovie] = React.useState();
     const [cookies, setCookie, removeCookie] = useCookies(['reco']);
-    // let { isLoading, error, data }: any = useQuery<any, any>([`movie_data_${index}`, index], async () =>
-    //     fetch((process.env.REACT_APP_URL || 'localhost') + '/movie/' + movie_data._id).then((res) => res.json())
-    // );
-    // console.log({new_data: data});
     const [data, setData] = React.useState<any>();
+
     React.useEffect(() => {
         fetch((process.env.REACT_APP_URL || 'localhost') + '/movie/' + movie_data._id).then((res) => res.json()).then((res) => {
             setData(res);
         });
-        console.log((process.env.REACT_APP_URL || 'localhost') + '/movie/' + movie_data._id);
-        
     })
-    // movie_data = {
-    //     image_url:
-    //         'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg',
-    //     title: 'The Avengers',
-    //     release_date: '4th May 2012',
-    //     genres: ['Action', 'Adventure', 'Sci-Fi'],
-    // };
-    // if(isLoading || error) return <Skeleton width="100%" height="100px" />;
+
     if(!data) return <Skeleton width="100%" height="100px" />;
     return (
         <Flex
@@ -145,31 +93,3 @@ function MovieDetails({ movie_data, index }: any) {
         </Flex>
     );
 }
-
-/* 
-"{
-  "movie_data": {
-    "_id": "5fa74a1433af7d2a2ad94ef6",
-    "popularity": 139.434,
-    "vote_count": 48,
-    "video": false,
-    "poster_path": "http://image.tmdb.org/t/p/w500/22jwKxZf4rcrmh2NS07SZAQYYNY.jpg",
-    "id": 604578,
-    "adult": false,
-    "backdrop_path": "/324jDHMRHWZ8HLbjRJNwVPYJZT0.jpg",
-    "original_language": "en",
-    "original_title": "Spontaneous",
-    "genre_ids": [
-      35,
-      27,
-      878,
-      10749
-    ],
-    "title": "Spontaneous",
-    "vote_average": 7.3,
-    "overview": "When students in their high school begin inexplicably exploding (literally...), seniors Mara and Dylan struggle to survive in a world where each moment may be their last.",
-    "release_date": "2020-10-02"
-  }
-}"
-
-*/
