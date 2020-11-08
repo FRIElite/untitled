@@ -26,10 +26,16 @@ export function Swipe(): ReactElement {
     const is_light: boolean = colorMode == 'light';
 
     const max_rating: number = 10;
+    const randomColor = () => {
+        const colors = ['white', 'red', 'orange', 'yellow', 'green', 'teal', 'blue', 'cyan', 'purple', 'pink'];
+
+        return colors[Math.floor(Math.random() * colors.length)];
+    };
+
 
     React.useEffect(() => {
         fetch((process.env.REACT_APP_URL || '') + '/recommend/' + cookies?.auth?.username)
-            .then((res) => res.json())
+            .then((res) => res?.json())
             .then((res) => {
                 return fetch((process.env.REACT_APP_URL || '') + '/movie/' + res._id).then((res) => res.json());
             })
@@ -45,7 +51,7 @@ export function Swipe(): ReactElement {
                         <Skeleton width="100%" height="300px" />
                     ) : (
                         <>
-                            <Heading size="lg" mb="10px" width="300px" whiteSpace="normal" textAlign="center">
+                            <Heading size="lg" mb="10px" width="400px" whiteSpace="normal" textAlign="center">
                                 {data.title}
                             </Heading>
                             <Image
@@ -57,7 +63,7 @@ export function Swipe(): ReactElement {
                             />
                             <Flex
                                 direction="row"
-                                justify="flex-start"
+                                justify="center"
                                 align="flex-start"
                                 mt="10px"
                                 wrap="wrap"
@@ -100,20 +106,21 @@ export function Swipe(): ReactElement {
     };
 
     return (
-        <Flex width="100%" direction="column" justify="center" align="center" mt="0px" pr="15%" pl="15%">
-            <Flex h="10px" width="100%" direction="row" justify="center">
+        <Flex direction="row" justify="center" width="100%">
+        <Flex width="500px" direction="column" justify="center" align="center" mt="10px">
+            <Flex h="10px" width="580px" direction="row" justify="space-evenly">
                 {new Array(max_rating).fill(0).map((a: any, i: number) => {
-                    const color: string = i < rating ? 'yellow.300' : is_light ? 'gray.300' : 'white';
-                    return <Icon name="star" color={color} mr="3px" size="30px" />;
+                    const color: string = i < rating ? `yellow.300` : is_light ? 'gray.300' : 'gray.100';
+                    return <Icon name="star" color={color}size="30px" />;
                 })}
             </Flex>
             <Slider
                 max={max_rating}
-                min={0}
+                min={1}
                 defaultValue={rating}
                 value={rating}
                 onChange={(value: number) => setRating(value)}
-                mt="35px"
+                mt="50px"
             >
                 <SliderTrack />
                 <SliderFilledTrack />
@@ -123,17 +130,16 @@ export function Swipe(): ReactElement {
                 </SliderThumb>
             </Slider>
             <Flex mt="500px" direction="row" w="80%" justify="space-evenly">
-                <Button width="30%" variant="solid" variantColor="green" onClick={vote}>
-                    <Box mr="10px">Vote</Box> <FontAwesomeIcon icon="check" />
-                </Button>
+                <Button width="30%" variant="solid" variantColor="green" onClick={vote} children="Vote" />
                 <Button
                     width="30%"
                     variant="solid"
                     variantColor="blue"
-                    children="Skip"
                     onClick={() => setReload(!reload)}
+                    children="Skip"
                 />
             </Flex>
+        </Flex>
         </Flex>
     );
 }

@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 import { useCookies } from 'react-cookie';
 import { getGenreById } from '../../../utils/utils';
 import { MovieGenre } from '../extra/MovieGenre';
+import './list.css';
 
 export function List(): ReactElement {
     const [cookies, setCookie, removeCookie] = useCookies(['reco']);
@@ -59,8 +60,9 @@ function MovieDetails({ movie_data, index }: any) {
         <Flex
             bg={is_light ? 'gray.100' : 'gray.700'}
             padding="5px 5px 5px 5px"
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
+            // onMouseEnter={() => setHover(true)}
+            // onMouseLeave={() => setHover(false)}
+            onClick={() => setHover(!hover)}
             transition="ease-in-out height 0.5s"
             direction="row"
             justify="space-between"
@@ -79,7 +81,7 @@ function MovieDetails({ movie_data, index }: any) {
                     </Flex>
 
                     {hover && (
-                        <Flex direction="column" justify="flex-start">
+                        <Flex direction="column" justify="flex-start" className="list-animation">
                             <Text>
                                 <b>Release date:</b> {data?.release_date}
                             </Text>

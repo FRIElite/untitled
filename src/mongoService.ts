@@ -60,7 +60,7 @@ export class MongoService {
     public async getMoviesByTitle(title: string): Promise<Movie[]> {
         return this.db
             .collection<Movie>('movies')
-            .find({ title: { $regex: title } })
+            .find({ title: { $regex: new RegExp(title, 'i') } })
             .limit(10)
             .toArray();
     }

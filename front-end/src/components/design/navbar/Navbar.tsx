@@ -16,18 +16,29 @@ import {
     Avatar,
     Button,
     Box,
+    Progress,
+    Spinner,
+    Stack,
 } from '@chakra-ui/core';
 import { Link, useHistory } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
+import { LogoLight } from '../../icons/LogoLight';
+import { LogoDark } from '../../icons/LogoDark';
 export function Navbar(): ReactElement {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { colorMode, toggleColorMode } = useColorMode();
     const [cookies, setCookie, removeCookie] = useCookies(['reco']);
-    const [topgenres, setTopGenres] = useState([{ genre: '', p: 0 }]);
+    const [topgenres, setTopGenres] = useState<any>([]);
     const is_light: boolean = colorMode == 'light';
     const color_mode_icon: any = is_light ? 'sun' : 'moon';
     const color_mode_color: any = is_light ? 'yellow' : 'gray';
     const history = useHistory();
+
+    const randomColor = () => {
+        const colors = ['red', 'orange', 'yellow', 'green', 'teal', 'cyan', 'purple'];
+
+        return colors[Math.floor(Math.random() * colors.length)];
+    };
 
     React.useEffect(() => {
         fetch((process.env.REACT_APP_URL || '') + '/topgenres/' + cookies?.auth?.username)
@@ -44,26 +55,30 @@ export function Navbar(): ReactElement {
     };
 
     const NavbarDrawer = (): ReactElement => {
+        
         return (
             <Drawer placement="right" onClose={onClose} isOpen={isOpen}>
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton />
-                    <DrawerHeader borderBottomWidth="1px">
+                    <DrawerHeader borderBottomWidth="1px" mb={1}>
                         <Flex direction="row" justify="flex-start" align="center">
                             <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
                             <Button variantColor="red" variant="outline" size="sm" ml="15px" onClick={Logout}>
                                 Logout
                             </Button>
                         </Flex>
-                        <Box>Dan Abrahmov</Box>
+                        <Box mt={2}>Dan Abrahmov</Box>
                     </DrawerHeader>
                     <DrawerBody>
-                        <strong>Top favourite genres</strong>
-                        {topgenres.slice(0, 3).map((e) => (
-                            <Box>
-                                <strong>{e.genre}</strong> - {Math.floor(e.p * 10000) / 100}%
-                            </Box>
+                        <Heading size="md">Top favourite genres</Heading>
+                        {topgenres.slice(0, 3).map((e: any) => (
+                            <Stack mt={1}>
+                                <Flex direction="column">
+                                    <Box><strong>{e?.genre}</strong> - {Math.floor(e.p * 10000) / 100}%</Box>
+                                    <Progress value={e?.p * 100} color={randomColor()} mb={1}/>
+                                </Flex>
+                            </Stack>
                         ))}
                     </DrawerBody>
                 </DrawerContent>
@@ -82,10 +97,11 @@ export function Navbar(): ReactElement {
                     size="lg"
                     onClick={() => toggleColorMode()}
                 />
-                <Heading as={Link} {...{ to: '/' }} size="2xl">
-                    Reco
-                </Heading>
-                <Avatar name="Dan Abrahmov" cursor="pointer" src="https://bit.ly/dan-abramov" onClick={onOpen} />
+                <Box as={Link} {...{ to: '/' }}>
+                    { is_light ? <LogoLight /> : <LogoDark /> }
+                </Box>
+                { topgenres.length == 0 ? <Spinner size="xl" /> : <Avatar name="Dan Abrahmov" cursor="pointer" src="https://bit.ly/dan-abramov" onClick={onOpen} />}
+                
             </Flex>
             <NavbarDrawer />
         </Flex>

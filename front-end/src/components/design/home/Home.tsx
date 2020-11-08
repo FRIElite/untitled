@@ -19,30 +19,7 @@ export function Home(): ReactElement {
                 variantColor={randomColor()}
                 size="lg"
             >
-                {' '}
-                Swipe{' '}
-            </Button>
-            <Button
-                as={Link}
-                {...{ to: '/list' }}
-                height="100px"
-                variant="outline"
-                variantColor={randomColor()}
-                size="lg"
-            >
-                {' '}
-                List{' '}
-            </Button>
-            <Button
-                as={Link}
-                {...{ to: '/rate' }}
-                height="100px"
-                variant="outline"
-                variantColor={randomColor()}
-                size="lg"
-            >
-                {' '}
-                Rate{' '}
+                Recommend
             </Button>
             <Button
                 as={Link}
@@ -52,9 +29,29 @@ export function Home(): ReactElement {
                 variantColor={randomColor()}
                 size="lg"
             >
-                {' '}
-                New{' '}
+                Search
             </Button>
+            <Button
+                as={Link}
+                {...{ to: '/list' }}
+                height="100px"
+                variant="outline"
+                variantColor={randomColor()}
+                size="lg"
+            >
+                Evaluated Movies
+            </Button>
+            <Button
+                as={Link}
+                {...{ to: '/rate' }}
+                height="100px"
+                variant="outline"
+                variantColor={randomColor()}
+                size="lg"
+            >
+                Unevaluated Movies
+            </Button>
+
         </SimpleGrid>
     );
 }

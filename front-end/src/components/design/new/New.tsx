@@ -67,7 +67,7 @@ const PopoverForm = () => {
     const addMovie = (data: any) => {
         if (!data) return;
 
-        fetch((process.env.REACT_APP_URL || 'localhost') + '/addunrated/' + cookies?.auth?.username, {
+        fetch((process.env.REACT_APP_URL || '') + '/addunrated/' + cookies?.auth?.username, {
             method: 'PUT',
             mode: 'cors',
             cache: 'no-cache',
