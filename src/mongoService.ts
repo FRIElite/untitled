@@ -1,14 +1,17 @@
-import { Db, MongoClient } from 'mongodb';
-import { User } from '../common/interfaces';
-
+import { Db, MongoClient, ObjectId } from 'mongodb';
+import { Genre, Movie, MovieRef, User } from '../common/interfaces';
 
 export class MongoService {
     private client: MongoClient;
     private db: Db;
 
     constructor() {
-        if (!process.env.MONGODB_URL) { throw new Error('Missing MONGODB_URL in the .env'); }
-        if (!process.env.DB_NAME) { throw new Error('Missing DB_NAME in the .env'); }
+        if (!process.env.MONGODB_URL) {
+            throw new Error('Missing MONGODB_URL in the .env');
+        }
+        if (!process.env.DB_NAME) {
+            throw new Error('Missing DB_NAME in the .env');
+        }
         this.client = new MongoClient(process.env.MONGODB_URL, { useUnifiedTopology: true });
         this.connect();
     }
@@ -20,24 +23,39 @@ export class MongoService {
     }
 
     public async listDatabases(): Promise<any> {
-        const databasesList = this.db.admin().listDatabases();
-        console.log(databasesList);
-        return new Promise((resolve, reject) => resolve(databasesList));
+        return this.db.admin().listDatabases();
     }
 
     public async getAllUsers(): Promise<User[]> {
-        const users = this.db.collection<User>('users').find({}).toArray();
-        return new Promise((resolve, reject) => resolve(users));
+        return this.db.collection<User>('users').find({}).toArray();
     }
 
     public async getByUsername(username: string): Promise<User[]> {
-        const users = this.db.collection<User>('users').find({username: {'$regex': username}}).toArray();
-        return new Promise((resolve, reject) => resolve(users));
+        return this.db.collection<User>('users').find({ username: username }).toArray();
+    }
 
+    public async getMovieById(id: ObjectId): Promise<Movie[]> {
+        return this.db.collection<Movie>('movies').find({ _id: id }).toArray();
     }
 
     public async insertUser(user: User): Promise<void> {
         this.db.collection('users').insertOne(user);
     }
 
+    public async updateUserRecommended(id: ObjectId, movie: MovieRef): Promise<void> {
+        this.db.collection('users').updateOne({ _id: id }, { $push: { recommendedMovies: movie } });
+    }
+
+    public async updateUserRated(id: ObjectId, movie: MovieRef): Promise<void> {
+        this.db
+            .collection('users')
+            .updateMany(
+                { _id: id },
+                { $push: { ratedMovies: movie }, $pull: { recommendedMovies: { id: new ObjectId(movie.id) } } }
+            );
+    }
+
+    public async getGenreById(id: number): Promise<Genre[]> {
+        return this.db.collection<Genre>('genres').find({ id: id }).toArray();
+    }
 }
