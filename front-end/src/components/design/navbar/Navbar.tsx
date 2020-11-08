@@ -15,15 +15,23 @@ import {
     DrawerCloseButton,
     List,
     ListItem,
+    Avatar,
+    Button,
 } from '@chakra-ui/core';
 import { Link } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 export function Navbar(): ReactElement {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { colorMode, toggleColorMode } = useColorMode();
-
+    const [cookies, setCookie, removeCookie] = useCookies(['reco']);
     const is_light: boolean = colorMode == 'light';
     const color_mode_icon: any = is_light ? 'sun' : 'moon';
     const color_mode_color: any = is_light ? 'yellow' : 'gray';
+
+    const Logout = () => {
+        removeCookie('auth');
+        return window.location.reload(false);
+    };
 
     const NavbarDrawer = (): ReactElement => {
         return (
@@ -31,7 +39,14 @@ export function Navbar(): ReactElement {
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton />
-                    <DrawerHeader borderBottomWidth="1px">Routes</DrawerHeader>
+                    <DrawerHeader borderBottomWidth="1px">
+                        <Flex direction="row" justify="flex-start" align="center">
+                            <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
+                            <Button variantColor="red" variant="outline" size="sm" ml="15px" onClick={Logout}>
+                                Logout
+                            </Button>
+                        </Flex>
+                    </DrawerHeader>
                     <DrawerBody>
                         <List styleType="disc">
                             <ListItem>
@@ -67,15 +82,19 @@ export function Navbar(): ReactElement {
                     size="lg"
                     onClick={() => toggleColorMode()}
                 />
-                <Heading size="2xl">Reco</Heading>
-                <IconButton
+                <Heading as={Link} {...{ to: '/' }} size="2xl">
+                    Reco
+                </Heading>
+                {/* <IconButton
                     variant="ghost"
                     variantColor="teal"
                     aria-label="Call Sage"
                     icon="drag-handle"
                     size="lg"
                     onClick={onOpen}
-                />
+                /> */}
+
+                <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" onClick={onOpen} />
             </Flex>
             <NavbarDrawer />
         </Flex>

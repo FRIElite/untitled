@@ -1,51 +1,25 @@
-import { Box, Flex, Text, SimpleGrid, Image, Button, Skeleton, Heading, Icon, useColorMode } from '@chakra-ui/core';
+import {
+    Box,
+    Flex,
+    Text,
+    SimpleGrid,
+    Image,
+    Button,
+    Skeleton,
+    Heading,
+    Icon,
+    useColorMode,
+    IconButton,
+} from '@chakra-ui/core';
 import React, { ReactElement } from 'react';
 import { useCookies } from 'react-cookie';
 import { useQuery } from 'react-query';
 import { getGenreById } from '../../../utils/utils';
 import { MovieGenre } from '../extra/MovieGenre';
 
-const movies_data = [
-    {
-        image_url:
-            'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg',
-        title: 'The Avengers',
-        release_date: '4th May 2012',
-        genres: ['Action', 'Adventure', 'Sci-Fi'],
-    },
-    {
-        image_url:
-            'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg',
-        title: 'The Avengers',
-        release_date: '4th May 2012',
-        genres: ['Action', 'Adventure', 'Sci-Fi'],
-    },
-    {
-        image_url:
-            'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg',
-        title: 'The Avengers',
-        release_date: '4th May 2012',
-        genres: ['Action', 'Adventure', 'Sci-Fi'],
-    },
-    {
-        image_url:
-            'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg',
-        title: 'The Avengers',
-        release_date: '4th May 2012',
-        genres: ['Action', 'Adventure', 'Sci-Fi'],
-    },
-    {
-        image_url:
-            'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg',
-        title: 'The Avengers',
-        release_date: '4th May 2012',
-        genres: ['Action', 'Adventure', 'Sci-Fi'],
-    },
-];
-
-export function List(): ReactElement {
+export function Rate(): ReactElement {
     const [cookies, setCookie, removeCookie] = useCookies(['reco']);
-    let { isLoading, error, data }: any = useQuery<any, any>('repoData', async () =>
+    let { isLoading, error, data }: any = useQuery<any, any>('ratedata', async () =>
         fetch((process.env.REACT_APP_URL || 'localhost') + '/user/' + cookies?.auth?.username).then((res) => res.json())
     );
 
@@ -55,9 +29,9 @@ export function List(): ReactElement {
     const movie_list = React.useMemo(() => {
         if (isLoading) return <Skeleton width="100%" height="100px" />;
         const movies = [];
-        for (let i = 0; i < data?.ratedMovies?.length || 0; i++) {
+        for (let i = 0; i < data?.unratedMovies?.length || 0; i++) {
             if (i >= showAmount) break;
-            movies.push(<MovieDetails movie_data={data?.ratedMovies[i]} index={i}/>);
+            movies.push(<MovieDetails movie_data={data?.unratedMovies[i]} index={i} />);
         }
         return (
             <SimpleGrid columns={1} spacing={1}>
@@ -68,7 +42,7 @@ export function List(): ReactElement {
     return (
         <Box mr="15px" ml="15px">
             {movie_list}
-            {showAmount < data?.ratedMovies?.length && (
+            {showAmount < data?.unratedMovies?.length && (
                 <Button borderRadius="0px" width="100%" mt={1} onClick={() => setShowAmount(showAmount + 5)}>
                     Load more
                 </Button>
@@ -77,42 +51,56 @@ export function List(): ReactElement {
     );
 }
 function MovieDetails({ movie_data, index }: any) {
-    const [hover, setHover] = React.useState(false);
+    const [hover, setHover] = React.useState(-1);
     const { colorMode, toggleColorMode } = useColorMode();
     const is_light: boolean = colorMode == 'light';
     const [movie, setMovie] = React.useState();
     const [cookies, setCookie, removeCookie] = useCookies(['reco']);
+    const [hide, setHide] = React.useState(false);
     // let { isLoading, error, data }: any = useQuery<any, any>([`movie_data_${index}`, index], async () =>
     //     fetch((process.env.REACT_APP_URL || 'localhost') + '/movie/' + movie_data._id).then((res) => res.json())
     // );
     // console.log({new_data: data});
     const [data, setData] = React.useState<any>();
     React.useEffect(() => {
-        fetch((process.env.REACT_APP_URL || 'localhost') + '/movie/' + movie_data._id).then((res) => res.json()).then((res) => {
-            setData(res);
-        });
+        fetch((process.env.REACT_APP_URL || 'localhost') + '/movie/' + movie_data._id)
+            .then((res) => res.json())
+            .then((res) => {
+                setData(res);
+            });
         console.log((process.env.REACT_APP_URL || 'localhost') + '/movie/' + movie_data._id);
-        
-    })
-    // movie_data = {
-    //     image_url:
-    //         'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg',
-    //     title: 'The Avengers',
-    //     release_date: '4th May 2012',
-    //     genres: ['Action', 'Adventure', 'Sci-Fi'],
-    // };
-    // if(isLoading || error) return <Skeleton width="100%" height="100px" />;
-    if(!data) return <Skeleton width="100%" height="100px" />;
+    });
+    const vote = (rating: number) => {
+        if (!data) return;
+        console.log({ data });
+
+        fetch((process.env.REACT_APP_URL || 'localhost') + '/vote/' + cookies?.auth?.username, {
+            method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, *cors, same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            body: JSON.stringify({
+                _id: data._id,
+                userRating: rating,
+            }), // body data type must match "Content-Type" header
+        }).then(() => setHide(true));
+    };
+    if (hide) return <></>;
+    if (!data) return <Skeleton width="100%" height="100px" />;
     return (
         <Flex
             bg={is_light ? 'gray.100' : 'gray.700'}
             padding="5px 5px 5px 5px"
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
             transition="ease-in-out height 0.5s"
             direction="row"
             justify="space-between"
-            height={hover ? '300px' : '80px'}
+            height={'80px'}
         >
             <Flex direction="row">
                 <Image height="100%" src={data?.poster_path} alt="Dan Abramov" border="1px solid white" />
@@ -122,23 +110,27 @@ function MovieDetails({ movie_data, index }: any) {
                     </Heading>
                     <Flex direction="row" mb="10px">
                         {data?.genre_ids?.map((genre: string) => (
-                            <MovieGenre mr="5px" children={getGenreById( genre)} />
+                            <MovieGenre mr="5px" children={getGenreById(genre)} />
                         ))}
                     </Flex>
-
-                    {hover && (
-                        <Flex direction="column" justify="flex-start">
-                            <Text>Release date: {data?.release_date}</Text>
-                            <Text>{data?.overview}</Text>
-                        </Flex>
-                    )}
                 </Flex>
             </Flex>
             <Flex direction="column" height="100%" justify="flex-start" mr="15px" mt="20px">
                 <Flex direction="row">
                     {new Array(10).fill(0).map((a: any, i: number) => {
-                        const color: string = i < movie_data.userRating ? 'yellow.300' : is_light ? 'gray.300' : 'white';
-                        return <Icon name="star" color={color} mr="3px" size="30px" />;
+                        const color: string = i <= hover ? 'yellow.300' : is_light ? 'gray.300' : 'white';
+                        return (
+                            <IconButton
+                                aria-label=""
+                                variant="ghost"
+                                color={color}
+                                mr="3px"
+                                icon="star"
+                                onClick={() => vote(i + 1)}
+                                onMouseEnter={() => setHover(i)}
+                                onMouseLeave={() => setHover(-1)}
+                            />
+                        );
                     })}
                 </Flex>
             </Flex>

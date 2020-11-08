@@ -19,9 +19,21 @@ import {
 } from '@chakra-ui/core';
 import { useQuery, QueryCache, ReactQueryCacheProvider } from 'react-query';
 import { useTrail, animated } from 'react-spring';
+import { MovieGenre } from '../extra/MovieGenre';
+import { useCookies } from 'react-cookie';
+import { getGenreById } from '../../../utils/utils';
 export function Swipe(): ReactElement {
-    let { isLoading, error, data }: any = useQuery<any, any>('repoData', () =>
-        fetch((process.env.REACT_APP_URL || "localhost") + '/recommend/test1').then((res) => res.json())
+    const [cookies, setCookie, removeCookie] = useCookies(['reco']);
+    console.log(cookies?.auth?.username);
+
+    let { isLoading, error, data }: any = useQuery<any, any>('swipe', () =>
+        fetch((process.env.REACT_APP_URL || 'localhost') + '/recommend/' + cookies?.auth?.username)
+            .then((res) => res.json())
+            .then((res) => {
+                return fetch((process.env.REACT_APP_URL || 'localhost') + '/movie/' + res._id).then((res) =>
+                    res.json()
+                );
+            })
     );
     const [rating, setRating] = React.useState(5);
     const { colorMode, toggleColorMode } = useColorMode();
@@ -38,33 +50,25 @@ export function Swipe(): ReactElement {
     //     genres: ['Action', 'Adventure', 'Sci-Fi'],
     // };
 
-    if (data)
-        data.image_url = 'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg';
+    console.log(data);
 
     const movie_thumb = React.useMemo(
         () => (
             <Box position="absolute" top={5}>
                 <Flex direction="column" justify="flex-start" align="center" w="200px">
-                    {isLoading  ? (
-                        <Skeleton width="100%" height="300px"/>
+                    {isLoading ? (
+                        <Skeleton width="100%" height="300px" />
                     ) : (
                         <>
-                            <Heading
-                                size="lg"
-                                mb="10px"
-                                width="200px"
-                                whiteSpace="normal"
-                                textAlign="center"
-                                height="30px"
-                            >
+                            <Heading size="lg" mb="10px" width="300px" whiteSpace="normal" textAlign="center">
                                 {data.title}
                             </Heading>
                             <Image
                                 width="250px"
-                                src={data?.image_url}
+                                src={data?.poster_path}
                                 alt="Dan Abramov"
                                 border="2px solid white"
-                                // borderColor={is_light ? 'black' : 'white'}
+                                borderColor={is_light ? 'black' : 'white'}
                             />
                             <Flex
                                 direction="row"
@@ -75,19 +79,8 @@ export function Swipe(): ReactElement {
                                 maxWidth="100%"
                                 position="relative"
                             >
-                                {data.genres?.map((genre: string, i: number) => (
-                                    <Box
-                                        border="1px solid #9F7AEA"
-                                        mb="5px"
-                                        mr={i !== data.genres.length - 1 ? '5px' : '0px'}
-                                        borderRadius="4px"
-                                        padding="0px 4px 0px 4px"
-                                        fontWeight="500"
-                                        color="#9F7AEA"
-                                        children={genre}
-                                        fontSize={10}
-                                        textTransform="capitalize"
-                                    />
+                                {data.genre_ids?.map((genre: string, i: number) => (
+                                    <MovieGenre mr={i !== data.genre_ids.length - 1 ? '5px' : '0px'} children={getGenreById(genre)} />
                                 ))}
                             </Flex>
                         </>
@@ -98,12 +91,33 @@ export function Swipe(): ReactElement {
         [data]
     );
 
+    const vote = () => {
+        if (!data) return;
+        console.log({ data });
+
+        fetch((process.env.REACT_APP_URL || 'localhost') + '/vote/' + cookies?.auth?.username, {
+            method: 'PUT',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer',
+            body: JSON.stringify({
+                _id: data._id,
+                userRating: rating,
+            }),
+        }).then(() => window.location.reload());
+    };
+
     return (
         <Flex width="100%" direction="column" justify="center" align="center" mt="0px" pr="15%" pl="15%">
             <Flex h="10px" width="100%" direction="row" justify="center">
                 {new Array(max_rating).fill(0).map((a: any, i: number) => {
-                    const color: string = i <= rating ? 'yellow.300' : is_light ? 'gray' : 'white';
-                    return <Icon name="star" color={color} mr={i !== 0 ? '3px' : '0px'} />;
+                    const color: string = i < rating ? 'yellow.300' : is_light ? 'gray.300' : 'white';
+                    return <Icon name="star" color={color} mr="3px" size="30px" />;
                 })}
             </Flex>
             <Slider
@@ -111,7 +125,7 @@ export function Swipe(): ReactElement {
                 min={0}
                 defaultValue={rating}
                 onChange={(value: number) => setRating(value)}
-                mt="30px"
+                mt="35px"
             >
                 <SliderTrack />
                 <SliderFilledTrack />
@@ -120,9 +134,15 @@ export function Swipe(): ReactElement {
                     {movie_thumb}
                 </SliderThumb>
             </Slider>
-            <Flex mt="450px" direction="row" w="100%" justify="space-evenly">
-                <Button width="30%" variant="solid" variantColor="green" children="Vote" />
-                <Button width="30%" variant="solid" variantColor="blue" children="Skip" />
+            <Flex mt="500px" direction="row" w="100%" justify="space-evenly">
+                <Button width="30%" variant="solid" variantColor="green" children="Vote" onClick={vote} />
+                <Button
+                    width="30%"
+                    variant="solid"
+                    variantColor="blue"
+                    children="Skip"
+                    onClick={() => window.location.reload()}
+                />
             </Flex>
         </Flex>
     );
