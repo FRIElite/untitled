@@ -1,38 +1,43 @@
 import { distance } from 'mathjs';
-import { Movie, User } from '../common/interfaces';
+import { MovieRef, User } from '../common/interfaces';
 
 // const k = 10;
 
-export function predict(user: User, users: User[]): Movie {
-    const userTitles = user.ratedMovies.sort().map(e => e.title);
-    const userVec = user.ratedMovies.sort().map(e => e.userRating);
+export function predict(user: User, users: User[]): MovieRef | null {
+    if (!user.ratedMovies || user.ratedMovies.length == 0) {
+        return null;
+    }
+    const userRatedMoviesIds = user.ratedMovies.filter((e) => e).map((e) => e._id!.toHexString());
+    const userRecommendedMoviesIds = user.unratedMovies.filter((e) => e).map((e) => e._id!.toHexString());
+    const userVec = user.ratedMovies.filter((e) => e).map((e) => e.userRating);
     const n = userVec.length;
 
-    console.log(userVec);
     const movieRatings = users
-        .filter(u => u.username !== user.username)
-        .map(tmpUser => {
-        const tmpUserTitles = tmpUser.ratedMovies.sort().map(e => e.title);
-        const tmpUserVec = tmpUser.ratedMovies.sort().map(e => e.userRating);
-        const tmpVec: number[] =  Array(n).fill(0);
-        for (let i = 0; i < n; i++) {
-            if (tmpUserTitles.includes(userTitles[i])) {
-                tmpVec[i] = tmpUserVec[tmpUserTitles.indexOf(userTitles[i])];
+        .filter((u) => u.username !== user.username)
+        .map((tmpUser) => {
+            const tmpUserRatedMoviesIds = tmpUser.ratedMovies.filter((e) => e).map((e) => e._id!.toHexString());
+            const tmpUserVec = tmpUser.ratedMovies.filter((e) => e).map((e) => e.userRating);
+            const tmpVec: number[] = Array(n).fill(0);
+            for (let i = 0; i < n; i++) {
+                if (tmpUserRatedMoviesIds.includes(userRatedMoviesIds[i])) {
+                    tmpVec[i] = tmpUserVec[tmpUserRatedMoviesIds.indexOf(userRatedMoviesIds[i])];
+                }
             }
-        }
-        console.log(tmpVec);
-        return {ratedMovies: tmpUser.ratedMovies, vec: tmpVec} as MovieVec;
-    });
+            return { ratedMovies: tmpUser.ratedMovies, vec: tmpVec } as MovieVec;
+        });
 
-    const sorted = movieRatings
-        .sort((a: MovieVec, b: MovieVec) => distance(a.vec, userVec) as number);
-
+    const sorted = movieRatings.sort((a: MovieVec, b: MovieVec) => distance(a.vec, userVec) as number);
     return sorted[0].ratedMovies
-        .filter(m => !userTitles.includes(m.title))
-        .sort((a, b) => a.userRating - b.userRating)[0];
+        .filter(
+            (m) =>
+                m &&
+                !userRatedMoviesIds.includes(m._id!.toHexString()) &&
+                !userRecommendedMoviesIds.includes(m._id!.toHexString())
+        )
+        .sort((a, b) => b.userRating - a.userRating)[0];
 }
 
 interface MovieVec {
-    ratedMovies: Movie[];
+    ratedMovies: MovieRef[];
     vec: number[];
 }
