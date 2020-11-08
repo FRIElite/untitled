@@ -76,7 +76,7 @@ function MovieDetails({ movie_data, index }: any) {
 
                     {hover && (
                         <Flex direction="column" justify="flex-start">
-                            <Text>Release date: {data?.release_date}</Text>
+                            <Text><b>Release date:</b> {data?.release_date}</Text>
                             <Text>{data?.overview}</Text>
                         </Flex>
                     )}

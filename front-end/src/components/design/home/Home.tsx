@@ -44,6 +44,17 @@ export function Home(): ReactElement {
                 {' '}
                 Rate{' '}
             </Button>
+            <Button
+                as={Link}
+                {...{ to: '/new' }}
+                height="100px"
+                variant="outline"
+                variantColor={randomColor()}
+                size="lg"
+            >
+                {' '}
+                New{' '}
+            </Button>
         </SimpleGrid>
     );
 }
