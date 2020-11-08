@@ -32,6 +32,11 @@ app.get('/genre/:id', async (req, res) => {
     res.send(genre);
 });
 
+app.get('/movie/:id', async (req, res) => {
+    const movie = (await mongo.getMovieById(new ObjectId(req.params.id)))[0];
+    res.send(movie);
+});
+
 app.post('/user/new', (req, res) => {
     mongo.insertUser(req.body as User);
     res.sendStatus(200);
