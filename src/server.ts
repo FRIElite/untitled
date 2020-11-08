@@ -1,5 +1,6 @@
 import { json } from 'body-parser';
 import express from 'express';
+import { applyDependencies, re } from 'mathjs';
 import { ObjectId } from 'mongodb';
 import path from 'path';
 import { MovieRef, User } from '../common/interfaces';
@@ -24,7 +25,7 @@ app.get('/recommend/:username', async (req, res) => {
     const user = await mongo.getByUsername(req.params.username);
     const recommendation = predict(user, await mongo.getAllUsers());
     if (recommendation) {
-        mongo.updateUserRecommended(user._id!, recommendation);
+        mongo.updateUserRated(user._id!, recommendation);
     }
     res.send(recommendation);
 });
@@ -37,6 +38,11 @@ app.get('/genre/:id', async (req, res) => {
 app.get('/movie/:id', async (req, res) => {
     const movie = await mongo.getMovieById(new ObjectId(req.params.id));
     res.send(movie);
+});
+
+app.get('/movie', async (req, res) => {
+    const movies = await mongo.getMoviesByTitle(req.query.q as string);
+    res.send(movies);
 });
 
 app.post('/user/new', (req, res) => {
@@ -52,11 +58,11 @@ app.put('/vote/:username', async (req, res) => {
     res.sendStatus(200);
 });
 
-app.put('/addmovie/:username', async (req, res) => {
+app.put('/addunrated/:username', async (req, res) => {
     const user = await mongo.getByUsername(req.params.username);
     const movieRef: MovieRef = req.body;
     movieRef._id = new ObjectId(movieRef._id);
-    mongo.updateUserRecommended(user._id!, movieRef);
+    mongo.updateUserUnrated(user._id!, movieRef);
     res.sendStatus(200);
 });
 

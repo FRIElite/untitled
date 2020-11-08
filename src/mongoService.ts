@@ -1,3 +1,4 @@
+import { re } from 'mathjs';
 import { Db, MongoClient, ObjectId } from 'mongodb';
 import { Genre, Movie, MovieRef, User } from '../common/interfaces';
 
@@ -42,7 +43,7 @@ export class MongoService {
         this.db.collection('users').insertOne(user);
     }
 
-    public async updateUserRecommended(id: ObjectId, movie: MovieRef): Promise<void> {
+    public async updateUserUnrated(id: ObjectId, movie: MovieRef): Promise<void> {
         this.db.collection('users').updateOne({ _id: id }, { $push: { unratedMovies: movie } });
     }
 
@@ -54,5 +55,13 @@ export class MongoService {
 
     public async getGenreById(id: number): Promise<Genre> {
         return this.db.collection<Genre>('genres').findOne({ id: id }) as Promise<Genre>;
+    }
+
+    public async getMoviesByTitle(title: string): Promise<Movie[]> {
+        return this.db
+            .collection<Movie>('movies')
+            .find({ title: { $regex: title } })
+            .limit(10)
+            .toArray();
     }
 }
