@@ -59,7 +59,7 @@ const PopoverForm = () => {
                 onMouseLeave={() => setHighlited(false)}
                 pl={1}
             >
-                <div dangerouslySetInnerHTML={{ __html: movie.title.replaceAll(value, `<b>${value}</b>`) }} />
+                <div dangerouslySetInnerHTML={{ __html: movie.title.replace(new RegExp(value, 'ig'), "<b>$&</b>") }} />
             </Flex>
         );
     };
