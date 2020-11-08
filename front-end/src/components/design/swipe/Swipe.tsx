@@ -21,7 +21,7 @@ import { useQuery, QueryCache, ReactQueryCacheProvider } from 'react-query';
 import { useTrail, animated } from 'react-spring';
 export function Swipe(): ReactElement {
     let { isLoading, error, data }: any = useQuery<any, any>('repoData', () =>
-        fetch('https://untitled-app-001.herokuapp.com/recommend/test1').then((res) => res.json())
+        fetch((process.env.REACT_APP_URL || "localhost") + '/recommend/test1').then((res) => res.json())
     );
     const [rating, setRating] = React.useState(5);
     const { colorMode, toggleColorMode } = useColorMode();
@@ -39,8 +39,7 @@ export function Swipe(): ReactElement {
     // };
 
     if (data)
-        data.image_url =
-            'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg';
+        data.image_url = 'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg';
 
     const movie_thumb = React.useMemo(
         () => (

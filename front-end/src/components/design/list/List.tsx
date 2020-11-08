@@ -42,14 +42,14 @@ const movies_data = [
 
 export function List(): ReactElement {
     let { isLoading, error, data }: any = useQuery<any, any>('repoData', () =>
-        fetch('https://untitled-app-001.herokuapp.com/user/test1').then((res) => res.json())
+        fetch((process.env.REACT_APP_URL || "localhost") +  '/user/test1').then((res) => res.json())
     );
 
     const movie_list = React.useMemo(() => {
         if(isLoading) return <Skeleton width="100%" height="100px" />
         return (
             <SimpleGrid columns={1} spacing={1}>
-                {data?.[0].ratedMovies?.map((movie_data: any) => (
+                {data?.[0]?.ratedMovies?.map((movie_data: any) => (
                     <MovieDetails movie_data={movie_data} />
                 ))}
                 <Button borderRadius="0px">Load more</Button>

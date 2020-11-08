@@ -13,11 +13,10 @@ import {
     Divider,
     Heading,
     DrawerCloseButton,
-    Link,
     List,
     ListItem,
 } from '@chakra-ui/core';
-
+import { Link } from 'react-router-dom';
 export function Navbar(): ReactElement {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { colorMode, toggleColorMode } = useColorMode();
@@ -36,17 +35,17 @@ export function Navbar(): ReactElement {
                     <DrawerBody>
                         <List styleType="disc">
                             <ListItem>
-                                <Link href="/" color="cyan.500">
+                                <Link to="/" color="cyan.500">
                                     Home
                                 </Link>
                             </ListItem>
                             <ListItem>
-                                <Link href="/list" color="cyan.500">
+                                <Link to="/list" color="cyan.500">
                                     List
                                 </Link>
                             </ListItem>
                             <ListItem>
-                                <Link href="/swipe" color="cyan.500">
+                                <Link to="/swipe" color="cyan.500">
                                     Swipe
                                 </Link>
                             </ListItem>
