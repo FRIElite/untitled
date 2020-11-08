@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import {
     Flex,
     Drawer,
@@ -15,6 +15,7 @@ import {
     ListItem,
     Avatar,
     Button,
+    Box,
 } from '@chakra-ui/core';
 import { Link, useHistory } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
@@ -22,14 +23,23 @@ export function Navbar(): ReactElement {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { colorMode, toggleColorMode } = useColorMode();
     const [cookies, setCookie, removeCookie] = useCookies(['reco']);
+    const [topgenres, setTopGenres] = useState([{ genre: '', p: 0 }]);
     const is_light: boolean = colorMode == 'light';
     const color_mode_icon: any = is_light ? 'sun' : 'moon';
     const color_mode_color: any = is_light ? 'yellow' : 'gray';
     const history = useHistory();
 
+    React.useEffect(() => {
+        fetch((process.env.REACT_APP_URL || 'localhost') + '/topgenres/' + cookies?.auth?.username)
+            .then((res) => res.json())
+            .then((res) => {
+                setTopGenres(res);
+            });
+    });
+
     const Logout = () => {
         removeCookie('auth');
-        history.push("/");
+        history.push('/');
         window.location.reload();
     };
 
@@ -46,25 +56,14 @@ export function Navbar(): ReactElement {
                                 Logout
                             </Button>
                         </Flex>
+                        <Box>Dan Abrahmov</Box>
                     </DrawerHeader>
                     <DrawerBody>
-                        <List styleType="disc">
-                            <ListItem>
-                                <Link to="/" color="cyan.500">
-                                    Home
-                                </Link>
-                            </ListItem>
-                            <ListItem>
-                                <Link to="/list" color="cyan.500">
-                                    List
-                                </Link>
-                            </ListItem>
-                            <ListItem>
-                                <Link to="/swipe" color="cyan.500">
-                                    Swipe
-                                </Link>
-                            </ListItem>
-                        </List>
+                        {topgenres.slice(3).map((e) => (
+                            <Box>
+                                {e.genre} - {e.p * 100}%
+                            </Box>
+                        ))}
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>
@@ -85,7 +84,7 @@ export function Navbar(): ReactElement {
                 <Heading as={Link} {...{ to: '/' }} size="2xl">
                     Reco
                 </Heading>
-                <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" onClick={onOpen} />
+                <Avatar name="Dan Abrahmov" cursor="pointer" src="https://bit.ly/dan-abramov" onClick={onOpen} />
             </Flex>
             <NavbarDrawer />
         </Flex>

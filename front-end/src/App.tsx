@@ -14,7 +14,6 @@ import { Rate } from './components/design/rate/Rate';
 
 function AppBase(): ReactElement {
     const [cookies, setCookie, removeCookie] = useCookies(['reco']);
-
     return (
         <Router>
             {!cookies?.auth ? <Redirect to="/login" /> : <Navbar />}

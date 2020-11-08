@@ -3,9 +3,10 @@ import express from 'express';
 import { applyDependencies, re } from 'mathjs';
 import { ObjectId } from 'mongodb';
 import path from 'path';
-import { MovieRef, User } from '../common/interfaces';
+import { moveSyntheticComments } from 'typescript';
+import { Movie, MovieRef, User } from '../common/interfaces';
 import { MongoService } from './mongoService';
-import { predict } from './predict';
+import { predict, getFavouriteGenres } from './predict';
 const app = express();
 const port = process.env.PORT || 8080;
 
@@ -41,8 +42,18 @@ app.get('/movie/:id', async (req, res) => {
 });
 
 app.get('/movie', async (req, res) => {
-    const movies = await mongo.getMoviesByTitle(req.query.q as string);
+    const movies = await mongo.getMoviesByTitle(encodeURI(req.query.q as string));
     res.send(movies);
+});
+
+app.get('/topgenres/:username', async (req, res) => {
+    const user = await mongo.getByUsername(req.params.username);
+    const movies: Movie[] = [];
+    for (let movie of user.ratedMovies) {
+        movies.push(await mongo.getMovieById(movie._id!));
+    }
+    const topgenres = getFavouriteGenres(movies, user.ratedMovies).sort((a, b) => b.p - a.p);
+    res.send(topgenres);
 });
 
 app.post('/user/new', (req, res) => {

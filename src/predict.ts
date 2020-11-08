@@ -1,6 +1,6 @@
 import { distance } from 'mathjs';
-import { MovieRef, User } from '../common/interfaces';
-
+import { Movie, MovieRef, User } from '../common/interfaces';
+import { getGenreById } from '../front-end/src/utils/utils';
 // const k = 10;
 
 export function predict(user: User, users: User[]): MovieRef | null {
@@ -40,4 +40,25 @@ export function predict(user: User, users: User[]): MovieRef | null {
 interface MovieVec {
     ratedMovies: MovieRef[];
     vec: number[];
+}
+
+interface GenreProb {
+    genre: string;
+    p: number;
+}
+
+export function getFavouriteGenres(ratedMovies: Movie[], ratedMovieRef: MovieRef[]): GenreProb[] {
+    const tmp: GenreProb[] = [];
+    for (let i = 0; i < ratedMovies.length; i++) {
+        for (let genre of ratedMovies[i].genre_ids) {
+            tmp.push({ genre: getGenreById(genre) || '', p: ratedMovieRef[i].userRating / 10 });
+        }
+    }
+    const differentGenres = new Set(tmp.map((e) => e.genre));
+    const out: GenreProb[] = [];
+    differentGenres.forEach((e) => {
+        const filtered = tmp.filter((gp) => gp.genre === e);
+        out.push({ genre: e, p: filtered.map((e) => e.p).reduce((a, b) => a + b) / filtered.length });
+    });
+    return out;
 }

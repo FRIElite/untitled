@@ -16,6 +16,7 @@ import {
 import { MovieGenre } from '../extra/MovieGenre';
 import { useCookies } from 'react-cookie';
 import { getGenreById } from '../../../utils/utils';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 export function Swipe(): ReactElement {
     const [reload, setReload] = React.useState(true);
     const [cookies, setCookie, removeCookie] = useCookies(['reco']);
@@ -27,6 +28,7 @@ export function Swipe(): ReactElement {
     const max_rating: number = 10;
 
     React.useEffect(() => {
+        console.log((process.env.REACT_APP_URL || 'localhost') + '/recommend/' + cookies?.auth?.username);
         fetch((process.env.REACT_APP_URL || 'localhost') + '/recommend/' + cookies?.auth?.username)
             .then((res) => res.json())
             .then((res) => {
@@ -123,8 +125,10 @@ export function Swipe(): ReactElement {
                     {movie_thumb}
                 </SliderThumb>
             </Slider>
-            <Flex mt="500px" direction="row" w="100%" justify="space-evenly">
-                <Button width="30%" variant="solid" variantColor="green" children="Vote" onClick={vote} />
+            <Flex mt="500px" direction="row" w="80%" justify="space-evenly">
+                <Button width="30%" variant="solid" variantColor="green" onClick={vote}>
+                    <Box mr="10px">Vote</Box> <FontAwesomeIcon icon="check" />
+                </Button>
                 <Button
                     width="30%"
                     variant="solid"
