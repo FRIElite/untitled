@@ -11,6 +11,7 @@ import { List } from './components/design/list/List';
 import { Swipe } from './components/design/swipe/Swipe';
 import { Login } from './components/design/login/Login';
 import { Rate } from './components/design/rate/Rate';
+import { New } from './components/design/new/New';
 
 function AppBase(): ReactElement {
     const [cookies, setCookie, removeCookie] = useCookies(['reco']);
@@ -30,6 +31,9 @@ function AppBase(): ReactElement {
                 </Route>
                 <Route path="/rate">
                     <Rate />
+                </Route>
+                <Route path="/new">
+                    <New />
                 </Route>
                 <Route exact path="/swipe">
                     <Swipe />

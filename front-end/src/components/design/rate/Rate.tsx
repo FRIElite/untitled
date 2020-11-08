@@ -106,7 +106,7 @@ function MovieDetails({ movie_data, index }: any) {
                     </Flex>
                 </Flex>
             </Flex>
-            <Flex direction="column" height="100%" justify="flex-start" mr="15px" mt="20px">
+            <Flex direction="column" height="100%" justify="center" align="center" mr="15px">
                 <Flex direction="row">
                     {new Array(10).fill(0).map((a: any, i: number) => {
                         const color: string = i <= hover ? 'yellow.300' : is_light ? 'gray.300' : 'white';
