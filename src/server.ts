@@ -25,7 +25,7 @@ app.get('/recommend/:username', async (req, res) => {
     const user = await mongo.getByUsername(req.params.username);
     const recommendation = predict(user, await mongo.getAllUsers());
     if (recommendation) {
-        mongo.updateUserRated(user._id!, recommendation);
+        mongo.updateUserUnrated(user._id!, recommendation);
     }
     res.send(recommendation);
 });
