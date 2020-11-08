@@ -30,12 +30,12 @@ export function Navbar(): ReactElement {
     const history = useHistory();
 
     React.useEffect(() => {
-        fetch((process.env.REACT_APP_URL || 'localhost') + '/topgenres/' + cookies?.auth?.username)
+        fetch((process.env.REACT_APP_URL || '') + '/topgenres/' + cookies?.auth?.username)
             .then((res) => res.json())
             .then((res) => {
                 setTopGenres(res);
             });
-    });
+    }, []);
 
     const Logout = () => {
         removeCookie('auth');
@@ -59,9 +59,10 @@ export function Navbar(): ReactElement {
                         <Box>Dan Abrahmov</Box>
                     </DrawerHeader>
                     <DrawerBody>
-                        {topgenres.slice(3).map((e) => (
+                        <strong>Top favourite genres</strong>
+                        {topgenres.slice(0, 3).map((e) => (
                             <Box>
-                                {e.genre} - {e.p * 100}%
+                                <strong>{e.genre}</strong> - {Math.floor(e.p * 10000) / 100}%
                             </Box>
                         ))}
                     </DrawerBody>

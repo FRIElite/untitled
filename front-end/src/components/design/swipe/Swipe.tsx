@@ -28,13 +28,10 @@ export function Swipe(): ReactElement {
     const max_rating: number = 10;
 
     React.useEffect(() => {
-        console.log((process.env.REACT_APP_URL || 'localhost') + '/recommend/' + cookies?.auth?.username);
-        fetch((process.env.REACT_APP_URL || 'localhost') + '/recommend/' + cookies?.auth?.username)
+        fetch((process.env.REACT_APP_URL || '') + '/recommend/' + cookies?.auth?.username)
             .then((res) => res.json())
             .then((res) => {
-                return fetch((process.env.REACT_APP_URL || 'localhost') + '/movie/' + res._id).then((res) =>
-                    res.json()
-                );
+                return fetch((process.env.REACT_APP_URL || '') + '/movie/' + res._id).then((res) => res.json());
             })
             .then((res) => setData(res))
             .then(() => setRating(5));
@@ -85,7 +82,7 @@ export function Swipe(): ReactElement {
     const vote = () => {
         if (!data) return;
 
-        fetch((process.env.REACT_APP_URL || 'localhost') + '/vote/' + cookies?.auth?.username, {
+        fetch((process.env.REACT_APP_URL || '') + '/vote/' + cookies?.auth?.username, {
             method: 'PUT',
             mode: 'cors',
             cache: 'no-cache',

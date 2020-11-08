@@ -50,8 +50,10 @@ interface GenreProb {
 export function getFavouriteGenres(ratedMovies: Movie[], ratedMovieRef: MovieRef[]): GenreProb[] {
     const tmp: GenreProb[] = [];
     for (let i = 0; i < ratedMovies.length; i++) {
-        for (let genre of ratedMovies[i].genre_ids) {
-            tmp.push({ genre: getGenreById(genre) || '', p: ratedMovieRef[i].userRating / 10 });
+        if (ratedMovies[i]) {
+            for (let genre of ratedMovies[i].genre_ids) {
+                tmp.push({ genre: getGenreById(genre) || '', p: ratedMovieRef[i].userRating / 10 });
+            }
         }
     }
     const differentGenres = new Set(tmp.map((e) => e.genre));

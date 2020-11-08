@@ -10,7 +10,9 @@ export function List(): ReactElement {
     const [showAmount, setShowAmount] = React.useState(5);
 
     React.useEffect(() => {
-        fetch((process.env.REACT_APP_URL || 'localhost') + '/user/' + cookies?.auth?.username).then((res) => res.json()).then((res) => setData(res))
+        fetch((process.env.REACT_APP_URL || '') + '/user/' + cookies?.auth?.username)
+            .then((res) => res.json())
+            .then((res) => setData(res));
     }, []);
 
     const movie_list = React.useMemo(() => {
@@ -18,7 +20,7 @@ export function List(): ReactElement {
         const movies = [];
         for (let i = 0; i < data?.ratedMovies?.length || 0; i++) {
             if (i >= showAmount) break;
-            movies.push(<MovieDetails movie_data={data?.ratedMovies[i]} index={i}/>);
+            movies.push(<MovieDetails movie_data={data?.ratedMovies[i]} index={i} />);
         }
         return (
             <SimpleGrid columns={1} spacing={1}>
@@ -45,12 +47,14 @@ function MovieDetails({ movie_data, index }: any) {
     const [data, setData] = React.useState<any>();
 
     React.useEffect(() => {
-        fetch((process.env.REACT_APP_URL || 'localhost') + '/movie/' + movie_data._id).then((res) => res.json()).then((res) => {
-            setData(res);
-        });
-    })
+        fetch((process.env.REACT_APP_URL || '') + '/movie/' + movie_data._id)
+            .then((res) => res.json())
+            .then((res) => {
+                setData(res);
+            });
+    }, []);
 
-    if(!data) return <Skeleton width="100%" height="100px" />;
+    if (!data) return <Skeleton width="100%" height="100px" />;
     return (
         <Flex
             bg={is_light ? 'gray.100' : 'gray.700'}
@@ -70,13 +74,15 @@ function MovieDetails({ movie_data, index }: any) {
                     </Heading>
                     <Flex direction="row" mb="10px">
                         {data?.genre_ids?.map((genre: string) => (
-                            <MovieGenre mr="5px" children={getGenreById( genre)} />
+                            <MovieGenre mr="5px" children={getGenreById(genre)} />
                         ))}
                     </Flex>
 
                     {hover && (
                         <Flex direction="column" justify="flex-start">
-                            <Text><b>Release date:</b> {data?.release_date}</Text>
+                            <Text>
+                                <b>Release date:</b> {data?.release_date}
+                            </Text>
                             <Text>{data?.overview}</Text>
                         </Flex>
                     )}
@@ -85,7 +91,8 @@ function MovieDetails({ movie_data, index }: any) {
             <Flex direction="column" height="100%" justify="flex-start" mr="15px" mt="20px">
                 <Flex direction="row">
                     {new Array(10).fill(0).map((a: any, i: number) => {
-                        const color: string = i < movie_data.userRating ? 'yellow.300' : is_light ? 'gray.300' : 'white';
+                        const color: string =
+                            i < movie_data.userRating ? 'yellow.300' : is_light ? 'gray.300' : 'white';
                         return <Icon name="star" color={color} mr="3px" size="30px" />;
                     })}
                 </Flex>

@@ -1,14 +1,4 @@
-import {
-    Box,
-    Flex,
-    SimpleGrid,
-    Image,
-    Button,
-    Skeleton,
-    Heading,
-    useColorMode,
-    IconButton,
-} from '@chakra-ui/core';
+import { Box, Flex, SimpleGrid, Image, Button, Skeleton, Heading, useColorMode, IconButton } from '@chakra-ui/core';
 import React, { ReactElement } from 'react';
 import { useCookies } from 'react-cookie';
 import { getGenreById } from '../../../utils/utils';
@@ -21,7 +11,9 @@ export function Rate(): ReactElement {
     const [showAmount, setShowAmount] = React.useState(5);
 
     React.useEffect(() => {
-        fetch((process.env.REACT_APP_URL || 'localhost') + '/user/' + cookies?.auth?.username).then((res) => res.json()).then((res) => setData(res))
+        fetch((process.env.REACT_APP_URL || '') + '/user/' + cookies?.auth?.username)
+            .then((res) => res.json())
+            .then((res) => setData(res));
     }, []);
 
     const movie_list = React.useMemo(() => {
@@ -57,16 +49,16 @@ function MovieDetails({ movie_data, index }: any) {
 
     const [data, setData] = React.useState<any>();
     React.useEffect(() => {
-        fetch((process.env.REACT_APP_URL || 'localhost') + '/movie/' + movie_data._id)
+        fetch((process.env.REACT_APP_URL || '') + '/movie/' + movie_data._id)
             .then((res) => res.json())
             .then((res) => {
                 setData(res);
             });
-    });
+    }, []);
     const vote = (rating: number) => {
         if (!data) return;
 
-        fetch((process.env.REACT_APP_URL || 'localhost') + '/vote/' + cookies?.auth?.username, {
+        fetch((process.env.REACT_APP_URL || '') + '/vote/' + cookies?.auth?.username, {
             method: 'PUT',
             mode: 'cors',
             cache: 'no-cache',
