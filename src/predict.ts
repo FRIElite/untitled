@@ -4,16 +4,16 @@ import { MovieRef, User } from '../common/interfaces';
 // const k = 10;
 
 export function predict(user: User, users: User[]): MovieRef {
-    const userRatedMoviesIds = user.ratedMovies.sort().map((e) => e.id.toHexString());
-    const userRecommendedMoviesIds = user.recommendedMovies.map((e) => e.id.toHexString());
-    const userVec = user.ratedMovies.sort().map((e) => e.userRating);
+    const userRatedMoviesIds = user.ratedMovies.filter((e) => e).map((e) => e.id.toHexString());
+    const userRecommendedMoviesIds = user.recommendedMovies.filter((e) => e).map((e) => e.id.toHexString());
+    const userVec = user.ratedMovies.filter((e) => e).map((e) => e.userRating);
     const n = userVec.length;
 
     const movieRatings = users
         .filter((u) => u.username !== user.username)
         .map((tmpUser) => {
-            const tmpUserRatedMoviesIds = tmpUser.ratedMovies.sort().map((e) => e.id.toHexString());
-            const tmpUserVec = tmpUser.ratedMovies.sort().map((e) => e.userRating);
+            const tmpUserRatedMoviesIds = tmpUser.ratedMovies.filter((e) => e).map((e) => e.id.toHexString());
+            const tmpUserVec = tmpUser.ratedMovies.filter((e) => e).map((e) => e.userRating);
             const tmpVec: number[] = Array(n).fill(0);
             for (let i = 0; i < n; i++) {
                 if (tmpUserRatedMoviesIds.includes(userRatedMoviesIds[i])) {
@@ -27,6 +27,7 @@ export function predict(user: User, users: User[]): MovieRef {
     return sorted[0].ratedMovies
         .filter(
             (m) =>
+                m &&
                 !userRatedMoviesIds.includes(m.id.toHexString()) &&
                 !userRecommendedMoviesIds.includes(m.id.toHexString())
         )
