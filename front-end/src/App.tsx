@@ -1,6 +1,5 @@
 import { ColorModeProvider, CSSReset, ThemeProvider } from '@chakra-ui/core';
 import React, { ReactElement } from 'react';
-import { ThemeProvider, CSSReset, ColorModeProvider, useColorMode } from '@chakra-ui/core';
 import customTheme from './components/theme/custom_theme';
 import { BrowserRouter as Router, Switch, Route, useHistory } from 'react-router-dom';
 
