@@ -45,5 +45,13 @@ app.put('/vote/:username', async (req, res) => {
     res.sendStatus(200);
 });
 
+app.put('/addmovie/:username', async (req, res) => {
+    const user = (await mongo.getByUsername(req.params.username))[0];
+    const movieRef: MovieRef = req.body;
+    movieRef.id = new ObjectId(movieRef.id);
+    mongo.updateUserRecommended(user._id!, movieRef);
+    res.sendStatus(200);
+});
+
 app.use(express.static(path.join(__dirname, '../front-end/build')));
 app.listen(port, () => console.log(`Server listening on port ${port}!`));
