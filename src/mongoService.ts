@@ -43,16 +43,13 @@ export class MongoService {
     }
 
     public async updateUserRecommended(id: ObjectId, movie: MovieRef): Promise<void> {
-        this.db.collection('users').updateOne({ _id: id }, { $push: { recommendedMovies: movie } });
+        this.db.collection('users').updateOne({ _id: id }, { $push: { unratedMovies: movie } });
     }
 
     public async updateUserRated(id: ObjectId, movie: MovieRef): Promise<void> {
         this.db
             .collection('users')
-            .updateMany(
-                { _id: id },
-                { $push: { ratedMovies: movie }, $pull: { recommendedMovies: { id: new ObjectId(movie.id) } } }
-            );
+            .updateMany({ _id: id }, { $push: { ratedMovies: movie }, $pull: { unratedMovies: { _id: movie._id } } });
     }
 
     public async getGenreById(id: number): Promise<Genre> {

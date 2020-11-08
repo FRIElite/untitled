@@ -23,7 +23,9 @@ app.get('/user/:username', async (req, res) => {
 app.get('/recommend/:username', async (req, res) => {
     const user = await mongo.getByUsername(req.params.username);
     const recommendation = predict(user, await mongo.getAllUsers());
-    mongo.updateUserRecommended(user._id!, recommendation);
+    if (recommendation) {
+        mongo.updateUserRecommended(user._id!, recommendation);
+    }
     res.send(recommendation);
 });
 
@@ -45,7 +47,7 @@ app.post('/user/new', (req, res) => {
 app.put('/vote/:username', async (req, res) => {
     const user = await mongo.getByUsername(req.params.username);
     const movieRef: MovieRef = req.body;
-    movieRef.id = new ObjectId(movieRef.id);
+    movieRef._id = new ObjectId(movieRef._id);
     mongo.updateUserRated(user._id!, movieRef);
     res.sendStatus(200);
 });
@@ -53,7 +55,7 @@ app.put('/vote/:username', async (req, res) => {
 app.put('/addmovie/:username', async (req, res) => {
     const user = await mongo.getByUsername(req.params.username);
     const movieRef: MovieRef = req.body;
-    movieRef.id = new ObjectId(movieRef.id);
+    movieRef._id = new ObjectId(movieRef._id);
     mongo.updateUserRecommended(user._id!, movieRef);
     res.sendStatus(200);
 });

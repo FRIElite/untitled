@@ -6,11 +6,11 @@ export interface User {
     pasword: string;
     email: string;
     ratedMovies: MovieRef[];
-    recommendedMovies: MovieRef[];
+    unratedMovies: MovieRef[];
 }
 
 export interface MovieRef {
-    id: ObjectId;
+    _id?: ObjectId;
     userRating: number;
 }
 
