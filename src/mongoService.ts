@@ -30,12 +30,12 @@ export class MongoService {
         return this.db.collection<User>('users').find({}).toArray();
     }
 
-    public async getByUsername(username: string): Promise<User[]> {
-        return this.db.collection<User>('users').find({ username: username }).toArray();
+    public async getByUsername(username: string): Promise<User> {
+        return this.db.collection<User>('users').findOne({ username: username }) as Promise<User>;
     }
 
-    public async getMovieById(id: ObjectId): Promise<Movie[]> {
-        return this.db.collection<Movie>('movies').find({ _id: id }).toArray();
+    public async getMovieById(id: ObjectId): Promise<Movie> {
+        return this.db.collection<Movie>('movies').findOne({ _id: id }) as Promise<Movie>;
     }
 
     public async insertUser(user: User): Promise<void> {
@@ -55,7 +55,7 @@ export class MongoService {
             );
     }
 
-    public async getGenreById(id: number): Promise<Genre[]> {
-        return this.db.collection<Genre>('genres').find({ id: id }).toArray();
+    public async getGenreById(id: number): Promise<Genre> {
+        return this.db.collection<Genre>('genres').findOne({ id: id }) as Promise<Genre>;
     }
 }
